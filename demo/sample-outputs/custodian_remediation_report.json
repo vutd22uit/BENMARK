@@ -1,0 +1,98 @@
+{
+    "execution_id": "custodian-run-2024-12-08-014500",
+    "timestamp": "2024-12-08T01:45:00+07:00",
+    "mode": "execute",
+    "policies_executed": 3,
+    "resources_evaluated": 45,
+    "resources_remediated": 3,
+    "policies": [
+        {
+            "name": "s3-enforce-block-public-access",
+            "resource_type": "aws.s3",
+            "resources_found": 2,
+            "resources_remediated": 2,
+            "actions_taken": [
+                {
+                    "resource_id": "public-bucket-1",
+                    "action": "set-public-block",
+                    "before_state": {
+                        "BlockPublicAcls": false,
+                        "BlockPublicPolicy": false,
+                        "IgnorePublicAcls": false,
+                        "RestrictPublicBuckets": false
+                    },
+                    "after_state": {
+                        "BlockPublicAcls": true,
+                        "BlockPublicPolicy": true,
+                        "IgnorePublicAcls": true,
+                        "RestrictPublicBuckets": true
+                    },
+                    "status": "success",
+                    "timestamp": "2024-12-08T01:45:12+07:00"
+                },
+                {
+                    "resource_id": "public-bucket-2",
+                    "action": "set-public-block",
+                    "before_state": {
+                        "BlockPublicAcls": false,
+                        "BlockPublicPolicy": true,
+                        "IgnorePublicAcls": false,
+                        "RestrictPublicBuckets": true
+                    },
+                    "after_state": {
+                        "BlockPublicAcls": true,
+                        "BlockPublicPolicy": true,
+                        "IgnorePublicAcls": true,
+                        "RestrictPublicBuckets": true
+                    },
+                    "status": "success",
+                    "timestamp": "2024-12-08T01:45:14+07:00"
+                }
+            ],
+            "notifications_sent": 1
+        },
+        {
+            "name": "security-group-ssh-remediate",
+            "resource_type": "aws.security-group",
+            "resources_found": 1,
+            "resources_remediated": 1,
+            "actions_taken": [
+                {
+                    "resource_id": "sg-12345678",
+                    "action": "remove-permissions",
+                    "before_state": {
+                        "ingress": [
+                            {
+                                "from_port": 22,
+                                "to_port": 22,
+                                "cidr_blocks": [
+                                    "0.0.0.0/0"
+                                ]
+                            }
+                        ]
+                    },
+                    "after_state": {
+                        "ingress": []
+                    },
+                    "status": "success",
+                    "timestamp": "2024-12-08T01:45:18+07:00"
+                }
+            ],
+            "notifications_sent": 1
+        },
+        {
+            "name": "cloudtrail-log-file-validation",
+            "resource_type": "aws.cloudtrail",
+            "resources_found": 0,
+            "resources_remediated": 0,
+            "actions_taken": [],
+            "notifications_sent": 0
+        }
+    ],
+    "summary": {
+        "total_resources_fixed": 3,
+        "total_notifications_sent": 2,
+        "execution_duration_seconds": 25,
+        "errors": 0
+    }
+}

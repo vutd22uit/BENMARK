@@ -1,0 +1,67 @@
+{
+    "check_type": "terraform",
+    "results": {
+        "passed_checks": [
+            {
+                "check_id": "CKV_AWS_67",
+                "check_name": "Ensure CloudTrail is enabled in all regions",
+                "check_result": {
+                    "result": "PASSED"
+                },
+                "file_path": "/iac/aws/cloudtrail.tf",
+                "resource": "aws_cloudtrail.main"
+            }
+        ],
+        "failed_checks": [
+            {
+                "check_id": "CKV_AWS_20",
+                "bc_check_id": "BC_AWS_S3_1",
+                "check_name": "Ensure S3 Bucket has public access blocks",
+                "check_result": {
+                    "result": "FAILED",
+                    "evaluated_keys": [
+                        "acl"
+                    ]
+                },
+                "file_path": "/iac/aws/s3_bucket.tf",
+                "file_line_range": [
+                    70,
+                    82
+                ],
+                "resource": "aws_s3_bucket.non_compliant_bucket",
+                "guideline": "https://docs.bridgecrew.io/docs/s3_1-acl-read-permissions-everyone",
+                "severity": "HIGH",
+                "description": "S3 bucket has public-read ACL which allows anyone to read the bucket contents"
+            },
+            {
+                "check_id": "CKV_AWS_24",
+                "bc_check_id": "BC_AWS_NETWORKING_1",
+                "check_name": "Ensure no security groups allow ingress from 0.0.0.0/0 to port 22",
+                "check_result": {
+                    "result": "FAILED",
+                    "evaluated_keys": [
+                        "ingress.cidr_blocks"
+                    ]
+                },
+                "file_path": "/iac/aws/security_groups.tf",
+                "file_line_range": [
+                    65,
+                    85
+                ],
+                "resource": "aws_security_group.non_compliant_ssh",
+                "guideline": "https://docs.bridgecrew.io/docs/networking_1-port-security",
+                "severity": "CRITICAL",
+                "description": "Security group allows SSH access from 0.0.0.0/0, exposing port 22 to the entire internet"
+            }
+        ],
+        "skipped_checks": []
+    },
+    "summary": {
+        "passed": 1,
+        "failed": 2,
+        "skipped": 0,
+        "parsing_errors": 0,
+        "resource_count": 3,
+        "checkov_version": "3.2.256"
+    }
+}

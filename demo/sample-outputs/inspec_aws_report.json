@@ -1,0 +1,115 @@
+{
+    "platform": {
+        "name": "aws",
+        "release": "aws-api"
+    },
+    "profiles": [
+        {
+            "name": "aws-cis-benchmark",
+            "version": "1.0.0",
+            "sha256": "abc123def456",
+            "title": "CIS AWS Foundations Benchmark",
+            "maintainer": "Compliance-as-Code Team",
+            "summary": "InSpec profile for CIS AWS Foundations Benchmark",
+            "license": "Apache-2.0",
+            "supports": [
+                {
+                    "platform": "aws"
+                }
+            ],
+            "controls": [
+                {
+                    "id": "cis-aws-1.1",
+                    "title": "Avoid the use of the root account",
+                    "desc": "The root account has unrestricted access to all resources in the AWS account.",
+                    "impact": 1.0,
+                    "tags": {
+                        "cis_control": "1.1",
+                        "severity": "high"
+                    },
+                    "results": [
+                        {
+                            "status": "passed",
+                            "code_desc": "AWS IAM Root User should not have access key",
+                            "run_time": 0.523,
+                            "start_time": "2024-12-08T01:30:00+07:00"
+                        }
+                    ]
+                },
+                {
+                    "id": "cis-aws-2.1",
+                    "title": "Ensure CloudTrail is enabled in all regions",
+                    "desc": "AWS CloudTrail is a web service that records AWS API calls for your account.",
+                    "impact": 1.0,
+                    "tags": {
+                        "cis_control": "2.1",
+                        "severity": "high"
+                    },
+                    "results": [
+                        {
+                            "status": "passed",
+                            "code_desc": "CloudTrail aws_cloudtrail_trail should be multi_region_trail",
+                            "run_time": 0.892,
+                            "start_time": "2024-12-08T01:30:01+07:00"
+                        },
+                        {
+                            "status": "passed",
+                            "code_desc": "CloudTrail aws_cloudtrail_trail should be logging",
+                            "run_time": 0.156,
+                            "start_time": "2024-12-08T01:30:02+07:00"
+                        }
+                    ]
+                },
+                {
+                    "id": "cis-aws-2.2.1",
+                    "title": "Ensure S3 buckets are not publicly accessible",
+                    "desc": "S3 buckets should not be configured to allow public access.",
+                    "impact": 1.0,
+                    "tags": {
+                        "cis_control": "2.2",
+                        "severity": "critical"
+                    },
+                    "results": [
+                        {
+                            "status": "passed",
+                            "code_desc": "S3 Bucket cis-compliance-compliant-lab should not be public",
+                            "run_time": 1.234,
+                            "start_time": "2024-12-08T01:30:03+07:00"
+                        },
+                        {
+                            "status": "passed",
+                            "code_desc": "S3 Bucket cis-compliance-logs-lab should not be public",
+                            "run_time": 0.987,
+                            "start_time": "2024-12-08T01:30:04+07:00"
+                        }
+                    ]
+                },
+                {
+                    "id": "cis-aws-4.1",
+                    "title": "Ensure no security groups allow ingress from 0.0.0.0/0 to port 22",
+                    "desc": "Security groups should not allow unrestricted access to SSH.",
+                    "impact": 1.0,
+                    "tags": {
+                        "cis_control": "4.1",
+                        "severity": "critical"
+                    },
+                    "results": [
+                        {
+                            "status": "passed",
+                            "code_desc": "Security Group sg-12345678 should not allow in port: 22, ipv4_range: '0.0.0.0/0'",
+                            "run_time": 0.456,
+                            "start_time": "2024-12-08T01:30:05+07:00"
+                        }
+                    ]
+                }
+            ],
+            "groups": [],
+            "sha256": "abc123"
+        }
+    ],
+    "statistics": {
+        "duration": 15.234
+    },
+    "version": "5.22.3",
+    "run_time_limit": null
+}

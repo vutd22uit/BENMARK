@@ -1,0 +1,107 @@
+{
+    "check_type": "terraform",
+    "results": {
+        "passed_checks": [
+            {
+                "check_id": "CKV_AWS_18",
+                "bc_check_id": "BC_AWS_S3_13",
+                "check_name": "Ensure the S3 bucket has access logging enabled",
+                "check_result": {
+                    "result": "PASSED"
+                },
+                "file_path": "/iac/aws/s3_bucket.tf",
+                "file_line_range": [
+                    5,
+                    15
+                ],
+                "resource": "aws_s3_bucket.compliant_bucket",
+                "guideline": "https://docs.bridgecrew.io/docs/s3_13-enable-logging"
+            },
+            {
+                "check_id": "CKV_AWS_19",
+                "bc_check_id": "BC_AWS_S3_14",
+                "check_name": "Ensure all data stored in the S3 bucket is securely encrypted at rest",
+                "check_result": {
+                    "result": "PASSED"
+                },
+                "file_path": "/iac/aws/s3_bucket.tf",
+                "file_line_range": [
+                    30,
+                    40
+                ],
+                "resource": "aws_s3_bucket.compliant_bucket",
+                "guideline": "https://docs.bridgecrew.io/docs/s3_14-data-encrypted-at-rest"
+            },
+            {
+                "check_id": "CKV_AWS_20",
+                "bc_check_id": "BC_AWS_S3_1",
+                "check_name": "Ensure S3 Bucket has public access blocks",
+                "check_result": {
+                    "result": "PASSED"
+                },
+                "file_path": "/iac/aws/s3_bucket.tf",
+                "file_line_range": [
+                    17,
+                    28
+                ],
+                "resource": "aws_s3_bucket_public_access_block.compliant_bucket",
+                "guideline": "https://docs.bridgecrew.io/docs/s3_1-acl-read-permissions-everyone"
+            },
+            {
+                "check_id": "CKV_AWS_24",
+                "bc_check_id": "BC_AWS_NETWORKING_1",
+                "check_name": "Ensure no security groups allow ingress from 0.0.0.0/0 to port 22",
+                "check_result": {
+                    "result": "PASSED"
+                },
+                "file_path": "/iac/aws/security_groups.tf",
+                "file_line_range": [
+                    10,
+                    35
+                ],
+                "resource": "aws_security_group.compliant_ssh",
+                "guideline": "https://docs.bridgecrew.io/docs/networking_1-port-security"
+            },
+            {
+                "check_id": "CKV_AWS_67",
+                "bc_check_id": "BC_AWS_LOGGING_7",
+                "check_name": "Ensure CloudTrail is enabled in all regions",
+                "check_result": {
+                    "result": "PASSED"
+                },
+                "file_path": "/iac/aws/cloudtrail.tf",
+                "file_line_range": [
+                    60,
+                    85
+                ],
+                "resource": "aws_cloudtrail.main",
+                "guideline": "https://docs.bridgecrew.io/docs/logging_7"
+            },
+            {
+                "check_id": "CKV_AWS_145",
+                "bc_check_id": "BC_AWS_GENERAL_56",
+                "check_name": "Ensure that S3 bucket has cross-region replication enabled",
+                "check_result": {
+                    "result": "PASSED"
+                },
+                "file_path": "/iac/aws/s3_bucket.tf",
+                "file_line_range": [
+                    5,
+                    15
+                ],
+                "resource": "aws_s3_bucket.compliant_bucket",
+                "guideline": "https://docs.bridgecrew.io/docs/general_56"
+            }
+        ],
+        "failed_checks": [],
+        "skipped_checks": []
+    },
+    "summary": {
+        "passed": 6,
+        "failed": 0,
+        "skipped": 0,
+        "parsing_errors": 0,
+        "resource_count": 12,
+        "checkov_version": "3.2.256"
+    }
+}
