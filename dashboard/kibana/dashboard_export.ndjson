@@ -1,0 +1,87 @@
+{
+  "version": "8.11.0",
+  "objects": [
+    {
+      "id": "cis-compliance-dashboard",
+      "type": "dashboard",
+      "attributes": {
+        "title": "CIS Benchmark Compliance Dashboard",
+        "description": "Compliance monitoring dashboard for CIS Benchmarks",
+        "panelsJSON": "[{\"version\":\"8.11.0\",\"type\":\"metric\",\"gridData\":{\"x\":0,\"y\":0,\"w\":12,\"h\":8},\"panelIndex\":\"1\",\"embeddableConfig\":{\"title\":\"Compliance Score\"},\"title\":\"Compliance Score\"},{\"version\":\"8.11.0\",\"type\":\"pie\",\"gridData\":{\"x\":12,\"y\":0,\"w\":12,\"h\":8},\"panelIndex\":\"2\",\"embeddableConfig\":{\"title\":\"Controls Status\"},\"title\":\"Controls by Status\"},{\"version\":\"8.11.0\",\"type\":\"bar\",\"gridData\":{\"x\":24,\"y\":0,\"w\":24,\"h\":8},\"panelIndex\":\"3\",\"embeddableConfig\":{\"title\":\"Controls by CIS Section\"},\"title\":\"Controls by Section\"},{\"version\":\"8.11.0\",\"type\":\"line\",\"gridData\":{\"x\":0,\"y\":8,\"w\":24,\"h\":12},\"panelIndex\":\"4\",\"embeddableConfig\":{\"title\":\"Compliance Score Trend\"},\"title\":\"Score Trend\"},{\"version\":\"8.11.0\",\"type\":\"table\",\"gridData\":{\"x\":24,\"y\":8,\"w\":24,\"h\":12},\"panelIndex\":\"5\",\"embeddableConfig\":{\"title\":\"Failed Controls\"},\"title\":\"Failed Controls\"}]",
+        "timeRestore": true,
+        "timeTo": "now",
+        "timeFrom": "now-7d",
+        "refreshInterval": {
+          "pause": false,
+          "value": 60000
+        },
+        "kibanaSavedObjectMeta": {
+          "searchSourceJSON": "{\"query\":{\"query\":\"\",\"language\":\"kuery\"},\"filter\":[]}"
+        }
+      }
+    },
+    {
+      "id": "cis-compliance-index-pattern",
+      "type": "index-pattern",
+      "attributes": {
+        "title": "cis-compliance*",
+        "timeFieldName": "timestamp"
+      }
+    },
+    {
+      "id": "compliance-score-metric",
+      "type": "visualization",
+      "attributes": {
+        "title": "Compliance Score",
+        "visState": "{\"title\":\"Compliance Score\",\"type\":\"metric\",\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"avg\",\"schema\":\"metric\",\"params\":{\"field\":\"compliance_score\"}}],\"params\":{\"addTooltip\":true,\"addLegend\":false,\"type\":\"metric\",\"metric\":{\"percentageMode\":true,\"colorSchema\":\"Green to Red\",\"colorsRange\":[{\"from\":0,\"to\":70},{\"from\":70,\"to\":90},{\"from\":90,\"to\":100}],\"labels\":{\"show\":true},\"style\":{\"fontSize\":60}}}}",
+        "kibanaSavedObjectMeta": {
+          "searchSourceJSON": "{\"index\":\"cis-compliance-index-pattern\",\"query\":{\"query\":\"\",\"language\":\"kuery\"},\"filter\":[]}"
+        }
+      }
+    },
+    {
+      "id": "controls-status-pie",
+      "type": "visualization",
+      "attributes": {
+        "title": "Controls by Status",
+        "visState": "{\"title\":\"Controls by Status\",\"type\":\"pie\",\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\"},{\"id\":\"2\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"segment\",\"params\":{\"field\":\"control_status\",\"size\":5,\"order\":\"desc\",\"orderBy\":\"1\"}}],\"params\":{\"type\":\"pie\",\"addTooltip\":true,\"addLegend\":true,\"legendPosition\":\"right\",\"isDonut\":true}}",
+        "kibanaSavedObjectMeta": {
+          "searchSourceJSON": "{\"index\":\"cis-compliance-index-pattern\",\"query\":{\"query\":\"scan_type:control\",\"language\":\"kuery\"},\"filter\":[]}"
+        }
+      }
+    },
+    {
+      "id": "controls-by-section",
+      "type": "visualization",
+      "attributes": {
+        "title": "Controls by CIS Section",
+        "visState": "{\"title\":\"Controls by CIS Section\",\"type\":\"histogram\",\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\"},{\"id\":\"2\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"segment\",\"params\":{\"field\":\"cis_section\",\"size\":10,\"order\":\"asc\",\"orderBy\":\"_key\"}},{\"id\":\"3\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"group\",\"params\":{\"field\":\"control_status\"}}],\"params\":{\"type\":\"histogram\",\"addTooltip\":true,\"addLegend\":true}}",
+        "kibanaSavedObjectMeta": {
+          "searchSourceJSON": "{\"index\":\"cis-compliance-index-pattern\",\"query\":{\"query\":\"scan_type:control\",\"language\":\"kuery\"},\"filter\":[]}"
+        }
+      }
+    },
+    {
+      "id": "compliance-trend",
+      "type": "visualization", 
+      "attributes": {
+        "title": "Compliance Score Trend",
+        "visState": "{\"title\":\"Compliance Score Trend\",\"type\":\"line\",\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"avg\",\"schema\":\"metric\",\"params\":{\"field\":\"compliance_score\"}},{\"id\":\"2\",\"enabled\":true,\"type\":\"date_histogram\",\"schema\":\"segment\",\"params\":{\"field\":\"timestamp\",\"interval\":\"d\"}}],\"params\":{\"type\":\"line\",\"addTooltip\":true,\"addLegend\":true,\"showCircles\":true}}",
+        "kibanaSavedObjectMeta": {
+          "searchSourceJSON": "{\"index\":\"cis-compliance-index-pattern\",\"query\":{\"query\":\"scan_type:summary\",\"language\":\"kuery\"},\"filter\":[]}"
+        }
+      }
+    },
+    {
+      "id": "failed-controls-table",
+      "type": "visualization",
+      "attributes": {
+        "title": "Failed Controls",
+        "visState": "{\"title\":\"Failed Controls\",\"type\":\"table\",\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\"},{\"id\":\"2\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"control_id\",\"size\":20}},{\"id\":\"3\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"control_title.keyword\"}}],\"params\":{\"perPage\":10,\"showTotal\":true}}",
+        "kibanaSavedObjectMeta": {
+          "searchSourceJSON": "{\"index\":\"cis-compliance-index-pattern\",\"query\":{\"query\":\"scan_type:control AND control_status:failed\",\"language\":\"kuery\"},\"filter\":[]}"
+        }
+      }
+    }
+  ]
+}
