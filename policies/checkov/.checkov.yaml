@@ -1,0 +1,51 @@
+# Checkov Configuration for CIS Benchmark Compliance
+
+# Framework to use
+framework:
+  - terraform
+  - terraform_plan
+
+# Output format
+output: cli
+
+# Compact output
+compact: true
+
+# Fail on severity
+hard-fail-on:
+  - CRITICAL
+  - HIGH
+
+# Soft fail on medium/low (report but don't block)
+soft-fail-on:
+  - MEDIUM
+  - LOW
+
+# Enable specific CIS checks
+check:
+  # CIS AWS Foundations Benchmark
+  - CKV_AWS_18  # S3 Bucket has access logging enabled
+  - CKV_AWS_19  # Ensure all data stored in EBS is encrypted
+  - CKV_AWS_20  # S3 Bucket has an ACL defined which allows public READ access
+  - CKV_AWS_21  # Ensure all data stored in S3 is encrypted
+  - CKV_AWS_24  # Ensure no security groups allow ingress from 0.0.0.0/0 to port 22
+  - CKV_AWS_25  # Ensure no security groups allow ingress from 0.0.0.0/0 to port 3389
+  - CKV_AWS_53  # S3 Block Public Access setting should be enabled
+  - CKV_AWS_67  # Ensure CloudTrail is enabled in all regions
+  - CKV_AWS_145 # Ensure S3 bucket has server-side encryption enabled
+
+# Skip checks (if needed for exceptions)
+skip-check: []
+
+# Directory to scan (relative to config file)
+directory:
+  - ../../iac/aws
+
+# Exclude paths
+exclude-paths: []
+
+# Enable quiet mode
+quiet: false
+
+# Download external modules
+download-external-modules: false

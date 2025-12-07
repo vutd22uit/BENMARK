@@ -1,0 +1,75 @@
+policies:
+  - name: security-group-ssh-remediate
+    description: |
+      CIS 4.1: Ensure no security groups allow ingress from 0.0.0.0/0 to port 22.
+      This policy removes overly permissive SSH rules from security groups.
+    resource: aws.security-group
+    filters:
+      - type: ingress
+        Ports: [22]
+        Cidr:
+          value: "0.0.0.0/0"
+    actions:
+      - type: remove-permissions
+        ingress: matched
+      - type: notify
+        template: default.html
+        priority_header: '1'
+        subject: '[Cloud Custodian] Security Group SSH Rule Removed - CIS 4.1'
+        violation_desc: 'Security group allowed SSH (port 22) from 0.0.0.0/0'
+        action_desc: 'Removed overly permissive SSH ingress rule'
+        to:
+          - compliance@example.com
+
+  - name: security-group-rdp-remediate
+    description: |
+      CIS 4.2: Ensure no security groups allow ingress from 0.0.0.0/0 to port 3389.
+      This policy removes overly permissive RDP rules from security groups.
+    resource: aws.security-group
+    filters:
+      - type: ingress
+        Ports: [3389]
+        Cidr:
+          value: "0.0.0.0/0"
+    actions:
+      - type: remove-permissions
+        ingress: matched
+      - type: notify
+        template: default.html
+        priority_header: '1'
+        subject: '[Cloud Custodian] Security Group RDP Rule Removed - CIS 4.2'
+        violation_desc: 'Security group allowed RDP (port 3389) from 0.0.0.0/0'
+        action_desc: 'Removed overly permissive RDP ingress rule'
+        to:
+          - compliance@example.com
+
+  - name: security-group-default-restrict
+    description: |
+      CIS 4.3: Ensure the default security group of every VPC restricts all traffic.
+      This policy removes all rules from default security groups.
+    resource: aws.security-group
+    filters:
+      - type: value
+        key: GroupName
+        value: default
+      - or:
+          - not:
+              - type: value
+                key: IpPermissions
+                value: []
+          - not:
+              - type: value
+                key: IpPermissionsEgress
+                value: []
+    actions:
+      - type: remove-permissions
+        ingress: all
+        egress: all
+      - type: notify
+        template: default.html
+        priority_header: '1'
+        subject: '[Cloud Custodian] Default Security Group Restricted - CIS 4.3'
+        violation_desc: 'Default security group had active rules'
+        action_desc: 'Removed all ingress and egress rules from default security group'
+        to:
+          - compliance@example.com

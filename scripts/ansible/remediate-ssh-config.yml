@@ -1,0 +1,189 @@
+---
+# Ansible Playbook to remediate SSH configuration for CIS Linux Benchmark
+# CIS 5.2.x: SSH Server Configuration
+
+- name: CIS Linux Benchmark - SSH Configuration Remediation
+  hosts: all
+  become: yes
+  vars:
+    sshd_config_path: /etc/ssh/sshd_config
+    backup_suffix: .bak.{{ ansible_date_time.epoch }}
+
+  tasks:
+    - name: Backup current SSH configuration
+      copy:
+        src: "{{ sshd_config_path }}"
+        dest: "{{ sshd_config_path }}{{ backup_suffix }}"
+        remote_src: yes
+      tags:
+        - backup
+
+    - name: CIS 5.2.1 - Set SSH LogLevel to INFO
+      lineinfile:
+        path: "{{ sshd_config_path }}"
+        regexp: '^#?LogLevel'
+        line: 'LogLevel INFO'
+        state: present
+      notify: restart sshd
+      tags:
+        - cis-5.2.1
+
+    - name: CIS 5.2.2 - Disable SSH X11 forwarding
+      lineinfile:
+        path: "{{ sshd_config_path }}"
+        regexp: '^#?X11Forwarding'
+        line: 'X11Forwarding no'
+        state: present
+      notify: restart sshd
+      tags:
+        - cis-5.2.2
+
+    - name: CIS 5.2.3 - Set SSH MaxAuthTries to 4
+      lineinfile:
+        path: "{{ sshd_config_path }}"
+        regexp: '^#?MaxAuthTries'
+        line: 'MaxAuthTries 4'
+        state: present
+      notify: restart sshd
+      tags:
+        - cis-5.2.3
+
+    - name: CIS 5.2.4 - Enable SSH IgnoreRhosts
+      lineinfile:
+        path: "{{ sshd_config_path }}"
+        regexp: '^#?IgnoreRhosts'
+        line: 'IgnoreRhosts yes'
+        state: present
+      notify: restart sshd
+      tags:
+        - cis-5.2.4
+
+    - name: CIS 5.2.5 - Disable SSH HostbasedAuthentication
+      lineinfile:
+        path: "{{ sshd_config_path }}"
+        regexp: '^#?HostbasedAuthentication'
+        line: 'HostbasedAuthentication no'
+        state: present
+      notify: restart sshd
+      tags:
+        - cis-5.2.5
+
+    - name: CIS 5.2.6 - Disable SSH root login
+      lineinfile:
+        path: "{{ sshd_config_path }}"
+        regexp: '^#?PermitRootLogin'
+        line: 'PermitRootLogin no'
+        state: present
+      notify: restart sshd
+      tags:
+        - cis-5.2.6
+
+    - name: CIS 5.2.7 - Disable SSH PermitEmptyPasswords
+      lineinfile:
+        path: "{{ sshd_config_path }}"
+        regexp: '^#?PermitEmptyPasswords'
+        line: 'PermitEmptyPasswords no'
+        state: present
+      notify: restart sshd
+      tags:
+        - cis-5.2.7
+
+    - name: CIS 5.2.8 - Disable SSH PermitUserEnvironment
+      lineinfile:
+        path: "{{ sshd_config_path }}"
+        regexp: '^#?PermitUserEnvironment'
+        line: 'PermitUserEnvironment no'
+        state: present
+      notify: restart sshd
+      tags:
+        - cis-5.2.8
+
+    - name: CIS 5.2.9 - Configure strong SSH ciphers
+      lineinfile:
+        path: "{{ sshd_config_path }}"
+        regexp: '^#?Ciphers'
+        line: 'Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-ctr'
+        state: present
+      notify: restart sshd
+      tags:
+        - cis-5.2.9
+
+    - name: CIS 5.2.10 - Configure strong SSH MAC algorithms
+      lineinfile:
+        path: "{{ sshd_config_path }}"
+        regexp: '^#?MACs'
+        line: 'MACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,hmac-sha2-512,hmac-sha2-256'
+        state: present
+      notify: restart sshd
+      tags:
+        - cis-5.2.10
+
+    - name: CIS 5.2.11 - Configure SSH idle timeout interval
+      blockinfile:
+        path: "{{ sshd_config_path }}"
+        marker: "# {mark} ANSIBLE MANAGED - CIS 5.2.11"
+        block: |
+          ClientAliveInterval 300
+          ClientAliveCountMax 3
+      notify: restart sshd
+      tags:
+        - cis-5.2.11
+
+    - name: CIS 5.2.12 - Set SSH LoginGraceTime to 60 seconds
+      lineinfile:
+        path: "{{ sshd_config_path }}"
+        regexp: '^#?LoginGraceTime'
+        line: 'LoginGraceTime 60'
+        state: present
+      notify: restart sshd
+      tags:
+        - cis-5.2.12
+
+    - name: CIS 5.2.14 - Configure SSH warning banner
+      lineinfile:
+        path: "{{ sshd_config_path }}"
+        regexp: '^#?Banner'
+        line: 'Banner /etc/issue.net'
+        state: present
+      notify: restart sshd
+      tags:
+        - cis-5.2.14
+
+    - name: Create SSH warning banner
+      copy:
+        dest: /etc/issue.net
+        content: |
+          ***************************************************************************
+          NOTICE TO USERS
+          
+          This computer system is the property of [ORGANIZATION NAME].
+          It is for authorized use only.
+          
+          Unauthorized or improper use of this system may result in administrative
+          disciplinary action and civil and criminal penalties.
+          
+          By continuing to use this system you indicate your awareness of and
+          consent to these terms and conditions of use.
+          
+          LOG OFF IMMEDIATELY if you do not agree to the conditions stated in this warning.
+          ***************************************************************************
+        mode: '0644'
+      tags:
+        - cis-5.2.14
+
+    - name: Validate SSH configuration
+      command: sshd -t
+      register: sshd_test
+      changed_when: false
+      failed_when: sshd_test.rc != 0
+
+    - name: Display SSH configuration test result
+      debug:
+        msg: "SSH configuration is valid"
+      when: sshd_test.rc == 0
+
+  handlers:
+    - name: restart sshd
+      service:
+        name: sshd
+        state: restarted

@@ -1,0 +1,102 @@
+policies:
+  - name: s3-enforce-block-public-access
+    description: |
+      CIS 2.2: Ensure S3 buckets are not publicly accessible.
+      This policy automatically enables S3 Block Public Access on all buckets.
+    resource: aws.s3
+    filters:
+      - or:
+          - type: value
+            key: PublicAccessBlockConfiguration.BlockPublicAcls
+            value: false
+          - type: value
+            key: PublicAccessBlockConfiguration.BlockPublicPolicy
+            value: false
+          - type: value
+            key: PublicAccessBlockConfiguration.IgnorePublicAcls
+            value: false
+          - type: value
+            key: PublicAccessBlockConfiguration.RestrictPublicBuckets
+            value: false
+    actions:
+      - type: set-public-block
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      - type: notify
+        template: default.html
+        priority_header: '1'
+        subject: '[Cloud Custodian] S3 Bucket Public Access Blocked - CIS 2.2'
+        violation_desc: 'S3 bucket had public access enabled'
+        action_desc: 'Enabled S3 Block Public Access on bucket'
+        to:
+          - compliance@example.com
+
+  - name: s3-enable-encryption
+    description: |
+      CIS 2.1.1: Ensure all S3 buckets employ encryption-at-rest.
+      This policy enables default encryption on S3 buckets.
+    resource: aws.s3
+    filters:
+      - type: bucket-encryption
+        state: false
+    actions:
+      - type: set-bucket-encryption
+        enabled: true
+        crypto: AES256
+      - type: notify
+        template: default.html
+        priority_header: '1'
+        subject: '[Cloud Custodian] S3 Bucket Encryption Enabled - CIS 2.1.1'
+        violation_desc: 'S3 bucket did not have encryption enabled'
+        action_desc: 'Enabled AES256 encryption on bucket'
+        to:
+          - compliance@example.com
+
+  - name: s3-enable-logging
+    description: |
+      CIS 2.3.1: Ensure S3 bucket access logging is enabled.
+      This policy enables access logging on S3 buckets (except logging buckets).
+    resource: aws.s3
+    filters:
+      - type: bucket-logging
+        op: disabled
+      - not:
+          - type: value
+            key: Name
+            op: regex
+            value: '.*-logs$'
+    actions:
+      - type: toggle-logging
+        enabled: true
+        target_bucket: '{account_id}-s3-access-logs'
+        target_prefix: '{source_bucket_name}/'
+      - type: notify
+        template: default.html
+        priority_header: '2'
+        subject: '[Cloud Custodian] S3 Bucket Logging Enabled - CIS 2.3.1'
+        violation_desc: 'S3 bucket did not have access logging enabled'
+        action_desc: 'Enabled access logging on bucket'
+        to:
+          - compliance@example.com
+
+  - name: s3-enable-versioning
+    description: |
+      CIS 2.4.1: Ensure S3 bucket versioning is enabled.
+      This policy enables versioning on S3 buckets.
+    resource: aws.s3
+    filters:
+      - type: bucket-versioning
+        state: false
+    actions:
+      - type: set-versioning
+        enabled: true
+      - type: notify
+        template: default.html
+        priority_header: '2'
+        subject: '[Cloud Custodian] S3 Bucket Versioning Enabled - CIS 2.4.1'
+        violation_desc: 'S3 bucket did not have versioning enabled'
+        action_desc: 'Enabled versioning on bucket'
+        to:
+          - compliance@example.com

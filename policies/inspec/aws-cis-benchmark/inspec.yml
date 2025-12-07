@@ -1,0 +1,14 @@
+name: aws-cis-benchmark
+title: CIS AWS Foundations Benchmark
+maintainer: Compliance-as-Code Team
+copyright: 2024
+copyright_email: compliance@example.com
+license: Apache-2.0
+summary: InSpec profile for CIS AWS Foundations Benchmark
+version: 1.0.0
+supports:
+  - platform: aws
+
+depends: []
+
+inspec_version: '>= 5.0'

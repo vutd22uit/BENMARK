@@ -1,0 +1,14 @@
+name: linux-cis-benchmark
+title: CIS Linux Benchmark
+maintainer: Compliance-as-Code Team
+copyright: 2024
+copyright_email: compliance@example.com
+license: Apache-2.0
+summary: InSpec profile for CIS Linux Benchmark
+version: 1.0.0
+supports:
+  - platform-family: linux
+
+depends: []
+
+inspec_version: '>= 5.0'

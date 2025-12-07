@@ -1,0 +1,21 @@
+# Example terraform.tfvars file
+# Copy this to terraform.tfvars and customize for your environment
+
+# AWS Region
+aws_region = "us-east-1"
+
+# Project name (used for resource naming)
+project_name = "cis-compliance"
+
+# Environment name
+environment = "lab"
+
+# Additional configuration examples:
+
+# Tags to apply to all resources
+# default_tags = {
+#   Environment = "lab"
+#   Project     = "CIS-Compliance"
+#   ManagedBy   = "Terraform"
+#   Owner       = "compliance-team"
+# }

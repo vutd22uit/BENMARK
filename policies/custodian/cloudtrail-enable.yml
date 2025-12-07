@@ -1,0 +1,56 @@
+policies:
+  - name: cloudtrail-enable-all-regions
+    description: |
+      CIS 2.1: Ensure CloudTrail is enabled in all regions.
+      This policy ensures CloudTrail is configured properly.
+    resource: aws.account
+    filters:
+      - type: check-cloudtrail
+        multi-region: false
+    actions:
+      - type: notify
+        template: default.html
+        priority_header: '1'
+        subject: '[Cloud Custodian] CloudTrail Not Multi-Region - CIS 2.1'
+        violation_desc: 'CloudTrail is not enabled in all regions'
+        action_desc: 'Manual remediation required: Enable multi-region CloudTrail'
+        to:
+          - compliance@example.com
+
+  - name: cloudtrail-log-file-validation
+    description: |
+      CIS 2.2: Ensure CloudTrail log file validation is enabled.
+      This policy checks for log file validation.
+    resource: aws.cloudtrail
+    filters:
+      - type: value
+        key: LogFileValidationEnabled
+        value: false
+    actions:
+      - type: update-trail
+        LogFileValidationEnabled: true
+      - type: notify
+        template: default.html
+        priority_header: '1'
+        subject: '[Cloud Custodian] CloudTrail Log Validation Enabled - CIS 2.2'
+        violation_desc: 'CloudTrail did not have log file validation enabled'
+        action_desc: 'Enabled log file validation on CloudTrail'
+        to:
+          - compliance@example.com
+
+  - name: cloudtrail-bucket-not-public
+    description: |
+      CIS 2.3: Ensure the S3 bucket used to store CloudTrail logs is not publicly accessible.
+      This policy ensures CloudTrail S3 buckets are private.
+    resource: aws.cloudtrail
+    filters:
+      - type: is-shadow
+        state: false
+    actions:
+      - type: post-finding
+        compliance_status: FAILED
+        severity_label: HIGH
+        types:
+          - Software and Configuration Checks/Industry and Regulatory Standards/CIS AWS Foundations Benchmark
+        description: |
+          CloudTrail S3 bucket may be publicly accessible. Verify bucket policy and public access block settings.
