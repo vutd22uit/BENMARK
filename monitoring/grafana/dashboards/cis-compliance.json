@@ -1,0 +1,387 @@
+{
+    "dashboard": {
+        "title": "CIS Compliance Overview",
+        "tags": [
+            "compliance",
+            "security",
+            "cis"
+        ],
+        "timezone": "browser",
+        "schemaVersion": 16,
+        "version": 1,
+        "refresh": "30s",
+        "panels": [
+            {
+                "id": 1,
+                "title": "Compliance Score",
+                "type": "gauge",
+                "gridPos": {
+                    "h": 8,
+                    "w": 8,
+                    "x": 0,
+                    "y": 0
+                },
+                "targets": [
+                    {
+                        "expr": "cis_compliance_score{environment=\"production\"}",
+                        "legendFormat": "{{profile}}"
+                    }
+                ],
+                "options": {
+                    "reduceOptions": {
+                        "values": false,
+                        "calcs": [
+                            "last"
+                        ]
+                    },
+                    "orientation": "auto",
+                    "showThresholdLabels": false,
+                    "showThresholdMarkers": true
+                },
+                "fieldConfig": {
+                    "defaults": {
+                        "thresholds": {
+                            "mode": "absolute",
+                            "steps": [
+                                {
+                                    "value": 0,
+                                    "color": "red"
+                                },
+                                {
+                                    "value": 70,
+                                    "color": "orange"
+                                },
+                                {
+                                    "value": 90,
+                                    "color": "green"
+                                }
+                            ]
+                        },
+                        "unit": "percent",
+                        "min": 0,
+                        "max": 100
+                    }
+                }
+            },
+            {
+                "id": 2,
+                "title": "Controls Status",
+                "type": "piechart",
+                "gridPos": {
+                    "h": 8,
+                    "w": 8,
+                    "x": 8,
+                    "y": 0
+                },
+                "targets": [
+                    {
+                        "expr": "cis_controls_passed{environment=\"production\"}",
+                        "legendFormat": "Passed"
+                    },
+                    {
+                        "expr": "cis_controls_failed{environment=\"production\"}",
+                        "legendFormat": "Failed"
+                    },
+                    {
+                        "expr": "cis_controls_skipped{environment=\"production\"}",
+                        "legendFormat": "Skipped"
+                    }
+                ],
+                "options": {
+                    "pieType": "pie",
+                    "legend": {
+                        "displayMode": "list",
+                        "placement": "right"
+                    }
+                }
+            },
+            {
+                "id": 3,
+                "title": "Violations by Severity",
+                "type": "bargauge",
+                "gridPos": {
+                    "h": 8,
+                    "w": 8,
+                    "x": 16,
+                    "y": 0
+                },
+                "targets": [
+                    {
+                        "expr": "cis_violations_by_severity{environment=\"production\"}",
+                        "legendFormat": "{{severity}}"
+                    }
+                ],
+                "options": {
+                    "orientation": "horizontal",
+                    "displayMode": "gradient"
+                },
+                "fieldConfig": {
+                    "defaults": {
+                        "thresholds": {
+                            "mode": "absolute",
+                            "steps": [
+                                {
+                                    "value": 0,
+                                    "color": "green"
+                                },
+                                {
+                                    "value": 1,
+                                    "color": "yellow"
+                                },
+                                {
+                                    "value": 5,
+                                    "color": "orange"
+                                },
+                                {
+                                    "value": 10,
+                                    "color": "red"
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            {
+                "id": 4,
+                "title": "Compliance Score Trend (24h)",
+                "type": "graph",
+                "gridPos": {
+                    "h": 8,
+                    "w": 12,
+                    "x": 0,
+                    "y": 8
+                },
+                "targets": [
+                    {
+                        "expr": "cis_compliance_score{environment=\"production\"}",
+                        "legendFormat": "{{profile}}"
+                    }
+                ],
+                "yaxes": [
+                    {
+                        "format": "percent",
+                        "min": 0,
+                        "max": 100
+                    },
+                    {
+                        "format": "short"
+                    }
+                ],
+                "xaxis": {
+                    "mode": "time"
+                },
+                "lines": true,
+                "fill": 1,
+                "linewidth": 2,
+                "points": false
+            },
+            {
+                "id": 5,
+                "title": "Failed Controls by Section",
+                "type": "table",
+                "gridPos": {
+                    "h": 8,
+                    "w": 12,
+                    "x": 12,
+                    "y": 8
+                },
+                "targets": [
+                    {
+                        "expr": "cis_control_status{environment=\"production\"} == 0",
+                        "format": "table",
+                        "instant": true
+                    }
+                ],
+                "transformations": [
+                    {
+                        "id": "organize",
+                        "options": {
+                            "excludeByName": {
+                                "Time": true,
+                                "Value": true
+                            },
+                            "indexByName": {},
+                            "renameByName": {
+                                "control_id": "Control ID",
+                                "title": "Title",
+                                "severity": "Severity",
+                                "section": "Section"
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                "id": 6,
+                "title": "Total Failed Controls",
+                "type": "stat",
+                "gridPos": {
+                    "h": 4,
+                    "w": 6,
+                    "x": 0,
+                    "y": 16
+                },
+                "targets": [
+                    {
+                        "expr": "cis_controls_failed{environment=\"production\"}",
+                        "legendFormat": "{{profile}}"
+                    }
+                ],
+                "options": {
+                    "reduceOptions": {
+                        "values": false,
+                        "calcs": [
+                            "last"
+                        ]
+                    },
+                    "textMode": "value_and_name"
+                },
+                "fieldConfig": {
+                    "defaults": {
+                        "thresholds": {
+                            "mode": "absolute",
+                            "steps": [
+                                {
+                                    "value": 0,
+                                    "color": "green"
+                                },
+                                {
+                                    "value": 1,
+                                    "color": "yellow"
+                                },
+                                {
+                                    "value": 5,
+                                    "color": "orange"
+                                },
+                                {
+                                    "value": 10,
+                                    "color": "red"
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            {
+                "id": 7,
+                "title": "Critical Violations",
+                "type": "stat",
+                "gridPos": {
+                    "h": 4,
+                    "w": 6,
+                    "x": 6,
+                    "y": 16
+                },
+                "targets": [
+                    {
+                        "expr": "cis_violations_by_severity{severity=\"critical\",environment=\"production\"}",
+                        "legendFormat": "Critical"
+                    }
+                ],
+                "options": {
+                    "reduceOptions": {
+                        "values": false,
+                        "calcs": [
+                            "last"
+                        ]
+                    },
+                    "textMode": "value"
+                },
+                "fieldConfig": {
+                    "defaults": {
+                        "thresholds": {
+                            "mode": "absolute",
+                            "steps": [
+                                {
+                                    "value": 0,
+                                    "color": "green"
+                                },
+                                {
+                                    "value": 1,
+                                    "color": "red"
+                                }
+                            ]
+                        },
+                        "color": {
+                            "mode": "thresholds"
+                        }
+                    }
+                }
+            },
+            {
+                "id": 8,
+                "title": "High Severity Violations",
+                "type": "stat",
+                "gridPos": {
+                    "h": 4,
+                    "w": 6,
+                    "x": 12,
+                    "y": 16
+                },
+                "targets": [
+                    {
+                        "expr": "cis_violations_by_severity{severity=\"high\",environment=\"production\"}",
+                        "legendFormat": "High"
+                    }
+                ],
+                "options": {
+                    "reduceOptions": {
+                        "values": false,
+                        "calcs": [
+                            "last"
+                        ]
+                    },
+                    "textMode": "value"
+                },
+                "fieldConfig": {
+                    "defaults": {
+                        "thresholds": {
+                            "mode": "absolute",
+                            "steps": [
+                                {
+                                    "value": 0,
+                                    "color": "green"
+                                },
+                                {
+                                    "value": 1,
+                                    "color": "orange"
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            {
+                "id": 9,
+                "title": "Last Scan Time",
+                "type": "stat",
+                "gridPos": {
+                    "h": 4,
+                    "w": 6,
+                    "x": 18,
+                    "y": 16
+                },
+                "targets": [
+                    {
+                        "expr": "cis_last_scan_timestamp{environment=\"production\"}*1000",
+                        "legendFormat": "{{profile}}"
+                    }
+                ],
+                "options": {
+                    "reduceOptions": {
+                        "values": false,
+                        "calcs": [
+                            "last"
+                        ]
+                    },
+                    "textMode": "value"
+                },
+                "fieldConfig": {
+                    "defaults": {
+                        "unit": "dateTimeAsIso"
+                    }
+                }
+            }
+        ]
+    }
+}

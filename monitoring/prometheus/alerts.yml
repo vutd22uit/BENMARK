@@ -1,0 +1,110 @@
+groups:
+  - name: cis_compliance_alerts
+    interval: 30s
+    rules:
+      # Critical: Compliance score dropped below 70%
+      - alert: ComplianceScoreCriticallyLow
+        expr: cis_compliance_score < 70
+        for: 5m
+        labels:
+          severity: critical
+          team: security
+        annotations:
+          summary: "CIS Compliance score critically low"
+          description: "Compliance score for {{ $labels.environment }}/{{ $labels.profile }} is {{ $value }}%, below critical threshold of 70%"
+          runbook_url: "https://wiki.example.com/runbooks/compliance-critical"
+
+      # Warning: Compliance score below 90%
+      - alert: ComplianceScoreLow
+        expr: cis_compliance_score < 90 and cis_compliance_score >= 70
+        for: 10m
+        labels:
+          severity: warning
+          team: security
+        annotations:
+          summary: "CIS Compliance score below target"
+          description: "Compliance score for {{ $labels.environment }}/{{ $labels.profile }} is {{ $value }}%, below target of 90%"
+
+      # Critical violations detected
+      - alert: CriticalViolationsDetected
+        expr: cis_violations_by_severity{severity="critical"} > 0
+        for: 2m
+        labels:
+          severity: critical
+          team: security
+        annotations:
+          summary: "Critical CIS violations detected"
+          description: "{{ $value }} critical violations detected in {{ $labels.environment }}"
+          action: "Immediate remediation required"
+
+      # High number of failed controls
+      - alert: HighNumberOfFailedControls
+        expr: cis_controls_failed > 10
+        for: 5m
+        labels:
+          severity: warning
+          team: security
+        annotations:
+          summary: "High number of failed controls"
+          description: "{{ $value }} controls failing in {{ $labels.environment }}/{{ $labels.profile }}"
+
+      # Compliance score dropped significantly
+      - alert: ComplianceScoreDropped
+        expr: |
+          (cis_compliance_score - cis_compliance_score offset 1h) < -10
+        for: 5m
+        labels:
+          severity: warning
+          team: security
+        annotations:
+          summary: "Compliance score dropped significantly"
+          description: "Compliance score dropped by {{ $value }}% in the last hour for {{ $labels.environment }}/{{ $labels.profile }}"
+
+      # No scan in last 24 hours
+      - alert: ComplianceScanStale
+        expr: |
+          (time() - cis_last_scan_timestamp) > 86400
+        for: 1h
+        labels:
+          severity: warning
+          team: devops
+        annotations:
+          summary: "Compliance scan data is stale"
+          description: "No compliance scan received for {{ $labels.environment }}/{{ $labels.profile }} in the last 24 hours"
+
+      # Specific control failing
+      - alert: CriticalControlFailing
+        expr: |
+          cis_control_status{control_id=~"cis-aws-1\\.1|cis-aws-2\\.1|cis-aws-4\\.1"} == 0
+        for: 5m
+        labels:
+          severity: critical
+          team: security
+        annotations:
+          summary: "Critical security control failing"
+          description: "Critical control {{ $labels.control_id }} ({{ $labels.title }}) is failing"
+          remediation: "Check control_mapping.md for remediation steps"
+
+      # High severity violations increasing
+      - alert: HighSeverityViolationsIncreasing
+        expr: |
+          (cis_violations_by_severity{severity="high"} - cis_violations_by_severity{severity="high"} offset 1h) > 3
+        for: 10m
+        labels:
+          severity: warning
+          team: security
+        annotations:
+          summary: "High severity violations increasing"
+          description: "High severity violations increased by {{ $value }} in the last hour"
+
+      # Prometheus exporter down
+      - alert: ComplianceExporterDown
+        expr: up{job="cis-compliance"} == 0
+        for: 5m
+        labels:
+          severity: critical
+          team: devops
+        annotations:
+          summary: "Compliance exporter is down"
+          description: "Prometheus cannot scrape compliance metrics"
+          action: "Check compliance-exporter container"
