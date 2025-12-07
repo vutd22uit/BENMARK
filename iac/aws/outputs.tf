@@ -1,8 +1,8 @@
 output "s3_bucket_names" {
   description = "Names of created S3 buckets"
   value = {
-    compliant_bucket = aws_s3_bucket.compliant_bucket.id
-    logging_bucket   = aws_s3_bucket.logging_bucket.id
+    compliant_bucket  = aws_s3_bucket.compliant_bucket.id
+    logging_bucket    = aws_s3_bucket.logging_bucket.id
     cloudtrail_bucket = aws_s3_bucket.cloudtrail_bucket.id
   }
 }
@@ -20,7 +20,7 @@ output "cloudtrail_kms_key_id" {
 output "security_group_ids" {
   description = "IDs of created security groups"
   value = {
-    compliant_ssh  = aws_security_group.compliant_ssh.id
+    compliant_ssh   = aws_security_group.compliant_ssh.id
     compliant_https = aws_security_group.compliant_https.id
   }
 }

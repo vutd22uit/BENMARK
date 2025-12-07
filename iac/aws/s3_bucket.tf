@@ -56,6 +56,24 @@ resource "aws_s3_bucket_public_access_block" "logging_bucket" {
   restrict_public_buckets = true
 }
 
+resource "aws_s3_bucket_versioning" "logging_bucket" {
+  bucket = aws_s3_bucket.logging_bucket.id
+
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
+
+resource "aws_s3_bucket_server_side_encryption_configuration" "logging_bucket" {
+  bucket = aws_s3_bucket.logging_bucket.id
+
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "AES256"
+    }
+  }
+}
+
 resource "aws_s3_bucket_logging" "compliant_bucket" {
   bucket = aws_s3_bucket.compliant_bucket.id
 
